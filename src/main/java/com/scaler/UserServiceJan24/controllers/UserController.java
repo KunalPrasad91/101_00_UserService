@@ -169,4 +169,29 @@ public class UserController {
 
         return responseEntity;
     }
+    @DeleteMapping("/id/{id}")
+    public ResponseEntity<Void> deleteUserById(@PathVariable("id") Long id)
+    {
+        ResponseEntity<Void> responseEntity;
+
+        userService.deleteUserById(id);
+
+        responseEntity = new ResponseEntity<>(HttpStatus.OK);
+
+        return responseEntity;
+    }
+
+    @DeleteMapping("/{name}")
+    public ResponseEntity<Void> deleteUserByName(@PathVariable("name") String name)
+    {
+        ResponseEntity<Void> responseEntity;
+
+        userService.deleteUserByName(name);
+
+        responseEntity = new ResponseEntity<>(HttpStatus.OK);
+
+        return responseEntity;
+    }
+
+
 }

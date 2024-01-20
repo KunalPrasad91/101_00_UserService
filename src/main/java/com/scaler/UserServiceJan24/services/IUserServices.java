@@ -11,4 +11,7 @@ public interface IUserServices {
     public User getUserById(Long id) throws UserNotFoundException;
     public User getUserByName(String name) throws UserNotFoundException;
     public List<User> getAllUser();
+
+    public void deleteUserById(Long id);
+    public void deleteUserByName(String name);
 }

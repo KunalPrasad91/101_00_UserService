@@ -52,4 +52,15 @@ public class UserServices implements  IUserServices{
         return  userRepository.findAll();
     }
 
+    @Override
+    public void deleteUserById(Long id) {
+        userRepository.deleteById(id);
+        return;
+    }
+
+    @Override
+    public void deleteUserByName(String name) {
+        userRepository.deleteByName(name);
+        return;
+    }
 }
