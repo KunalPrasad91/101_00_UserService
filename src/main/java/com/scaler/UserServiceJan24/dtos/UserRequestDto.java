@@ -1,13 +1,12 @@
-package com.scaler.UserServiceJan24.models;
+package com.scaler.UserServiceJan24.dtos;
 
-import jakarta.persistence.Entity;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-@Entity
-public class User extends BaseModel{
+public class UserRequestDto {
+
     private String name;
     private String password;
     private String phonenumber;
