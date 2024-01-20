@@ -14,6 +14,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @RestController
 @RequestMapping("/users")
 public class UserController {
@@ -136,6 +139,34 @@ public class UserController {
         return  responseEntity;
     }
 
+    @GetMapping()
+    public ResponseEntity<List<UserResponseDto>> getAllUsers()
+    {
+        ResponseEntity<List<UserResponseDto>> responseEntity;
+        List<UserResponseDto> userResponseDtos = new ArrayList<>();
 
+        List<User> users = userService.getAllUser();
 
+        if(users.isEmpty())
+        {
+            responseEntity = new ResponseEntity<>(userResponseDtos,HttpStatus.NOT_FOUND);
+        }
+        else
+        {
+            for(User user :users)
+            {
+                UserResponseDto tempResponse = new UserResponseDto();
+                tempResponse.setName(user.getName());
+                tempResponse.setAddress(user.getAddress());
+                tempResponse.setPhonenumber(user.getPhonenumber());
+                tempResponse.setMessage("Successful");
+                tempResponse.setResponseStatus(ResponseStatus.SUCCESS);
+
+                userResponseDtos.add(tempResponse);
+            }
+            responseEntity = new ResponseEntity<>(userResponseDtos,HttpStatus.OK);
+        }
+
+        return responseEntity;
+    }
 }
