@@ -14,4 +14,6 @@ public interface IUserServices {
 
     public void deleteUserById(Long id);
     public void deleteUserByName(String name);
+
+    public User updateUserById(Long id, User user) throws UserNotFoundException;
 }

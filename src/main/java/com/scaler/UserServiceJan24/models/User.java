@@ -12,5 +12,4 @@ public class User extends BaseModel{
     private String password;
     private String phonenumber;
     private String address;
-
 }

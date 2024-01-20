@@ -193,5 +193,47 @@ public class UserController {
         return responseEntity;
     }
 
+    @PatchMapping("/{id}")
+    public ResponseEntity<UserResponseDto> updateUserById(@PathVariable("id") Long id, @RequestBody UserRequestDto request)
+    {
+        UserResponseDto response = new UserResponseDto();
+        ResponseEntity<UserResponseDto> responseEntity;
+
+        System.out.println("User name " + request.getName());
+
+        User user = new User();
+
+        if(request.getName() != null)
+            user.setName(request.getName());
+
+        if(request.getPassword()!= null)
+            user.setPassword(request.getPassword());
+
+        if (request.getAddress()!= null)
+            user.setAddress(request.getAddress());
+
+        if (request.getPhonenumber()!= null)
+            user.setPhonenumber(request.getPhonenumber());
+
+        try {
+            user = userService.updateUserById(id,user);
+
+            response.setName(user.getName());
+            response.setAddress(user.getAddress());
+            response.setPhonenumber(user.getPhonenumber());
+            response.setMessage("Succesfully updated");
+            response.setResponseStatus(ResponseStatus.SUCCESS);
+
+            responseEntity = new ResponseEntity<>(response,HttpStatus.OK);
+        }
+        catch (UserNotFoundException e)
+        {
+            response.setMessage(e.getMessage());
+            response.setResponseStatus(ResponseStatus.FAILURE);
+            responseEntity = new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        }
+
+        return responseEntity;
+    }
 
 }

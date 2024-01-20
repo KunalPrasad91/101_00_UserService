@@ -63,4 +63,33 @@ public class UserServices implements  IUserServices{
         userRepository.deleteByName(name);
         return;
     }
+
+    @Override
+    public User updateUserById(Long id, User request) throws UserNotFoundException {
+
+        Optional<User> userOptional = userRepository.findById(id);
+
+        if(userOptional.isEmpty())
+        {
+            throw  new UserNotFoundException("User with id " + id + " not found");
+        }
+
+        User savedUser = userOptional.get();
+
+        if(request.getName() != null)
+            savedUser.setName(request.getName());
+
+        if(request.getPassword()!= null)
+            savedUser.setPassword(request.getPassword());
+
+        if (request.getAddress()!= null)
+            savedUser.setAddress(request.getAddress());
+
+        if(request.getPhonenumber()!= null)
+            savedUser.setPhonenumber(request.getPhonenumber());
+
+        savedUser = userRepository.save(savedUser);
+
+        return  savedUser;
+    }
 }
