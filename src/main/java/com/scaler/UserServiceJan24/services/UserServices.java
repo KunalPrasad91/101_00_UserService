@@ -36,4 +36,16 @@ public class UserServices implements  IUserServices{
         return userOptional.get();
     }
 
+    public User getUserByName(String name) throws UserNotFoundException {
+        Optional<User> userOptional = userRepository.findByName(name);
+
+        if(userOptional.isEmpty())
+        {
+            throw  new UserNotFoundException("User with name " + name + " not found");
+        }
+
+        return userOptional.get();
+
+    }
+
 }

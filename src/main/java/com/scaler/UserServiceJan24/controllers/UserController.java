@@ -52,7 +52,7 @@ public class UserController {
     }
 
  /*
-    // Step 1 getUserById without ResponseEntity 
+    // Step 1 getUserById without ResponseEntity
     @GetMapping("/{id}")
     public UserResponseDto getUserById(@PathVariable("id") Long id)
     {
@@ -105,6 +105,37 @@ public class UserController {
 
         return responseEntity;
     }
+
+    @GetMapping("/name/{name}")
+    public ResponseEntity<UserResponseDto> getUserByName(@PathVariable("name") String name)
+    {
+        UserResponseDto response = new UserResponseDto();
+        ResponseEntity<UserResponseDto> responseEntity;
+
+        User user;
+
+        try {
+            user = userService.getUserByName(name);
+
+            response.setName(user.getName());
+            response.setPhonenumber(user.getPhonenumber());
+            response.setAddress(user.getAddress());
+            response.setResponseStatus(ResponseStatus.SUCCESS);
+            response.setMessage("Found user by name " + name);
+
+            responseEntity = new ResponseEntity<>(response, HttpStatus.OK);
+
+        }
+        catch (UserNotFoundException e) {
+            response.setMessage(e.getMessage());
+            response.setResponseStatus(ResponseStatus.FAILURE);
+
+            responseEntity = new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        }
+
+        return  responseEntity;
+    }
+
 
 
 }

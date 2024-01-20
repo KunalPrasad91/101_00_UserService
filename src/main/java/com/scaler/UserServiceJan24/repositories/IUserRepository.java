@@ -10,5 +10,6 @@ import java.util.Optional;
 public interface IUserRepository extends JpaRepository<User,Long> {
 
     Optional<User> findById(Long id);
+    Optional<User> findByName(String name);
     User save(User user);
 }

@@ -7,4 +7,5 @@ public interface IUserServices {
 
     public User createUser(User user);
     public User getUserById(Long id) throws UserNotFoundException;
+    public User getUserByName(String name) throws UserNotFoundException;
 }
