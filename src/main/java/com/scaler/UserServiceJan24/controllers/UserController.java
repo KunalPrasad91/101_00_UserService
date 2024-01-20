@@ -10,6 +10,8 @@ import com.scaler.UserServiceJan24.services.IUserServices;
 import com.scaler.UserServiceJan24.services.UserServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -49,6 +51,8 @@ public class UserController {
         return userResponseDto;
     }
 
+ /*
+    // Step 1 getUserById without ResponseEntity 
     @GetMapping("/{id}")
     public UserResponseDto getUserById(@PathVariable("id") Long id)
     {
@@ -71,7 +75,35 @@ public class UserController {
         }
 
         return response;
+    }*/
 
+    @GetMapping("/{id}")
+    public ResponseEntity<UserResponseDto> getUserById(@PathVariable("id") Long id)
+    {
+        UserResponseDto response = new UserResponseDto();
+        ResponseEntity<UserResponseDto> responseEntity;
+        User user;
+
+        try {
+            user = userService.getUserById(id);
+
+            response.setName(user.getName());
+            response.setPhonenumber(user.getPhonenumber());
+            response.setAddress(user.getAddress());
+            response.setResponseStatus(ResponseStatus.SUCCESS);
+            response.setMessage("Found user by Id " + id);
+
+            responseEntity = new ResponseEntity<>(response, HttpStatus.OK);
+
+        }
+        catch (UserNotFoundException e) {
+            response.setMessage(e.getMessage());
+            response.setResponseStatus(ResponseStatus.FAILURE);
+
+            responseEntity = new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        }
+
+        return responseEntity;
     }
 
 
