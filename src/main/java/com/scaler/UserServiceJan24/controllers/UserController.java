@@ -4,6 +4,7 @@ import com.scaler.UserServiceJan24.dtos.UserDto;
 import com.scaler.UserServiceJan24.dtos.UserRequestDto;
 import com.scaler.UserServiceJan24.dtos.UserResponseDto;
 import com.scaler.UserServiceJan24.enums.ResponseStatus;
+import com.scaler.UserServiceJan24.exceptions.UserNotFoundException;
 import com.scaler.UserServiceJan24.models.User;
 import com.scaler.UserServiceJan24.services.IUserServices;
 import com.scaler.UserServiceJan24.services.UserServices;
@@ -22,7 +23,7 @@ public class UserController {
     {
         this.userService = userService;
     }
-    
+
     @PostMapping()
     public UserResponseDto createUser(@RequestBody UserRequestDto userRequestDto)
     {
@@ -48,6 +49,30 @@ public class UserController {
         return userResponseDto;
     }
 
+    @GetMapping("/{id}")
+    public UserResponseDto getUserById(@PathVariable("id") Long id)
+    {
+        UserResponseDto response = new UserResponseDto();
+
+        User user;
+
+        try {
+            user = userService.getUserById(id);
+
+            response.setName(user.getName());
+            response.setPhonenumber(user.getPhonenumber());
+            response.setAddress(user.getAddress());
+            response.setResponseStatus(ResponseStatus.SUCCESS);
+            response.setMessage("Found user by Id " + id);
+        }
+        catch (UserNotFoundException e) {
+            response.setMessage(e.getMessage());
+            response.setResponseStatus(ResponseStatus.FAILURE);
+        }
+
+        return response;
+
+    }
 
 
 }
