@@ -1,5 +1,6 @@
 package com.scaler.UserServiceJan24.services;
 
+import com.scaler.UserServiceJan24.exceptions.UserFoundException;
 import com.scaler.UserServiceJan24.exceptions.UserNotFoundException;
 import com.scaler.UserServiceJan24.models.User;
 import com.scaler.UserServiceJan24.repositories.IUserRepository;
@@ -21,6 +22,23 @@ public class UserServices implements  IUserServices{
     }
     public User createUser(User userRequest)
     {
+        User savedUser = userRepository.save(userRequest);
+
+        return savedUser;
+    }
+
+    @Override
+    public User signUpUser(User userRequest) throws UserFoundException {
+
+        String email = userRequest.getEmail();
+
+        Optional<User> userOptional = userRepository.findByEmail(email);
+
+        if(!userOptional.isEmpty())
+        {
+            throw new UserFoundException("User with " + email + " already exist");
+        }
+
         User savedUser = userRepository.save(userRequest);
 
         return savedUser;
