@@ -56,7 +56,7 @@ public class UserController {
     }
 
     @PostMapping("/signup")
-    UserResponseDto signUpUser(@RequestBody UserRequestDto userRequestDto)
+    ResponseEntity<UserResponseDto> signUpUser(@RequestBody UserRequestDto userRequestDto)
     {
         System.out.println("User name " + userRequestDto.getName());
         System.out.println("User email " + userRequestDto.getEmail());
@@ -71,6 +71,7 @@ public class UserController {
         userRequest.setPhonenumber(userRequestDto.getPhonenumber());
         userRequest.setAddress(userRequestDto.getAddress());
 
+        ResponseEntity<UserResponseDto> responseEntity;
         UserResponseDto userResponseDto = new UserResponseDto();
         try {
             User createdUser = userService.signUpUser(userRequest);
@@ -81,14 +82,18 @@ public class UserController {
             userResponseDto.setPhonenumber(createdUser.getPhonenumber());
             userResponseDto.setMessage("Succesfull");
             userResponseDto.setResponseStatus(ResponseStatus.SUCCESS);
+
+            responseEntity = new ResponseEntity<>(userResponseDto,HttpStatus.OK);
         }
         catch (UserFoundException e)
         {
             userResponseDto.setMessage(e.getMessage());
             userResponseDto.setResponseStatus(ResponseStatus.FAILURE);
+
+            responseEntity = new ResponseEntity<>(userResponseDto, HttpStatus.NOT_ACCEPTABLE);
         }
 
-        return userResponseDto;
+        return responseEntity;
     }
 
 
