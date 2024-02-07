@@ -1,9 +1,11 @@
 package com.scaler.UserServiceJan24.controllers;
 
 import com.scaler.UserServiceJan24.dtos.UserDto;
+import com.scaler.UserServiceJan24.dtos.UserLoginRequestDto;
 import com.scaler.UserServiceJan24.dtos.UserRequestDto;
 import com.scaler.UserServiceJan24.dtos.UserResponseDto;
 import com.scaler.UserServiceJan24.enums.ResponseStatus;
+import com.scaler.UserServiceJan24.exceptions.PasswordNotMatchingException;
 import com.scaler.UserServiceJan24.exceptions.UserFoundException;
 import com.scaler.UserServiceJan24.exceptions.UserNotFoundException;
 import com.scaler.UserServiceJan24.models.User;
@@ -94,6 +96,38 @@ public class UserController {
         }
 
         return responseEntity;
+    }
+
+    @PostMapping("/login")
+    ResponseEntity<UserResponseDto> userLogin(@RequestBody UserLoginRequestDto requestDto)
+    {
+        ResponseEntity<UserResponseDto> responseEntity;
+        UserResponseDto response = new UserResponseDto();
+        User savedUser;
+        try {
+            savedUser = userService.loginUser(requestDto.getEmail(), requestDto.getPassword());
+            response.setEmail(savedUser.getEmail());
+            response.setName(savedUser.getName());
+            response.setPhonenumber(savedUser.getPhonenumber());
+            response.setMessage("Logged In Succesfully");
+            response.setResponseStatus(ResponseStatus.SUCCESS);
+            response.setAddress(savedUser.getAddress());
+            responseEntity = new ResponseEntity<>(response, HttpStatus.OK);
+        }
+        catch(UserNotFoundException e)
+        {
+            response.setMessage(e.getMessage());
+            response.setResponseStatus(ResponseStatus.FAILURE);
+            responseEntity = new ResponseEntity<>(response,HttpStatus.NOT_FOUND);
+        }
+        catch (PasswordNotMatchingException e)
+        {
+            response.setMessage(e.getMessage());
+            response.setResponseStatus(ResponseStatus.FAILURE);
+            responseEntity = new ResponseEntity<>(response,HttpStatus.NOT_ACCEPTABLE);
+        }
+
+        return  responseEntity;
     }
 
 

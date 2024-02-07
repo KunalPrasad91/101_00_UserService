@@ -1,5 +1,6 @@
 package com.scaler.UserServiceJan24.services;
 
+import com.scaler.UserServiceJan24.exceptions.PasswordNotMatchingException;
 import com.scaler.UserServiceJan24.exceptions.UserFoundException;
 import com.scaler.UserServiceJan24.exceptions.UserNotFoundException;
 import com.scaler.UserServiceJan24.models.User;
@@ -40,6 +41,26 @@ public class UserServices implements  IUserServices{
         }
 
         User savedUser = userRepository.save(userRequest);
+
+        return savedUser;
+    }
+
+    @Override
+    public User loginUser(String email, String password) throws UserNotFoundException, PasswordNotMatchingException {
+
+        Optional<User> optionalUser = userRepository.findByEmail(email);
+
+        if(optionalUser.isEmpty())
+        {
+            throw  new UserNotFoundException("User with email " + email + " doesnot exist");
+        }
+
+        User savedUser = optionalUser.get();
+
+        if(!password.equals(savedUser.getPassword()))
+        {
+            throw  new PasswordNotMatchingException("Incorrect password, Login Failed, 3 more attempt left");
+        }
 
         return savedUser;
     }

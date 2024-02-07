@@ -1,5 +1,6 @@
 package com.scaler.UserServiceJan24.services;
 
+import com.scaler.UserServiceJan24.exceptions.PasswordNotMatchingException;
 import com.scaler.UserServiceJan24.exceptions.UserFoundException;
 import com.scaler.UserServiceJan24.exceptions.UserNotFoundException;
 import com.scaler.UserServiceJan24.models.User;
@@ -10,6 +11,7 @@ public interface IUserServices {
 
     public User createUser(User user);
     public User signUpUser(User user) throws UserFoundException;
+    public  User loginUser(String email, String password) throws UserNotFoundException, PasswordNotMatchingException;
     public User getUserById(Long id) throws UserNotFoundException;
     public User getUserByName(String name) throws UserNotFoundException;
     public List<User> getAllUser();
