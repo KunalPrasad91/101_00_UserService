@@ -3,13 +3,19 @@ package com.scaler.UserServiceJan24.services;
 import com.scaler.UserServiceJan24.exceptions.PasswordNotMatchingException;
 import com.scaler.UserServiceJan24.exceptions.UserFoundException;
 import com.scaler.UserServiceJan24.exceptions.UserNotFoundException;
+import com.scaler.UserServiceJan24.models.Token;
 import com.scaler.UserServiceJan24.models.User;
 import com.scaler.UserServiceJan24.repositories.IUserRepository;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -51,7 +57,7 @@ public class UserServices implements  IUserServices{
     }
 
     @Override
-    public User loginUser(String email, String password) throws UserNotFoundException, PasswordNotMatchingException {
+    public Token loginUser(String email, String password) throws UserNotFoundException, PasswordNotMatchingException {
 
         Optional<User> optionalUser = userRepository.findByEmail(email);
 
@@ -62,12 +68,28 @@ public class UserServices implements  IUserServices{
 
         User savedUser = optionalUser.get();
 
-        if(!password.equals(savedUser.getHashedPassword()))
+         /*   if(!password.equals(savedUser.getHashedPassword()))
+        {
+            throw  new PasswordNotMatchingException("Incorrect password, Login Failed, 3 more attempt left");
+        }*/
+
+        if(!bCryptPasswordEncoder.matches(password, savedUser.getHashedPassword()))
         {
             throw  new PasswordNotMatchingException("Incorrect password, Login Failed, 3 more attempt left");
         }
 
-        return savedUser;
+        LocalDate today = LocalDate.now();
+        LocalDate thirtyDaysLater = today.plus(30, ChronoUnit.DAYS);
+
+        // Convert LocalDate to Date
+        Date expiryDate = Date.from(thirtyDaysLater.atStartOfDay(ZoneId.systemDefault()).toInstant());
+
+        Token token = new Token();
+        token.setExpirydate(expiryDate);
+        token.setUser(savedUser);
+        token.setValue(RandomStringUtils.randomAlphanumeric(128));
+
+        return token;
     }
 
     public User getUserById(Long id) throws UserNotFoundException {

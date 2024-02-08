@@ -1,5 +1,6 @@
 package com.scaler.UserServiceJan24.controllers;
 
+import com.scaler.UserServiceJan24.dtos.TokenResponseDto;
 import com.scaler.UserServiceJan24.dtos.UserLoginRequestDto;
 import com.scaler.UserServiceJan24.dtos.UserRequestDto;
 import com.scaler.UserServiceJan24.dtos.UserResponseDto;
@@ -7,6 +8,7 @@ import com.scaler.UserServiceJan24.enums.ResponseStatus;
 import com.scaler.UserServiceJan24.exceptions.PasswordNotMatchingException;
 import com.scaler.UserServiceJan24.exceptions.UserFoundException;
 import com.scaler.UserServiceJan24.exceptions.UserNotFoundException;
+import com.scaler.UserServiceJan24.models.Token;
 import com.scaler.UserServiceJan24.models.User;
 import com.scaler.UserServiceJan24.services.IUserServices;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -94,6 +96,7 @@ public class UserController {
 
         return responseEntity;
     }
+/*
 
     @PostMapping("/login")
     ResponseEntity<UserResponseDto> userLogin(@RequestBody UserLoginRequestDto requestDto)
@@ -122,6 +125,53 @@ public class UserController {
             response.setMessage(e.getMessage());
             response.setResponseStatus(ResponseStatus.FAILURE);
             responseEntity = new ResponseEntity<>(response,HttpStatus.NOT_ACCEPTABLE);
+        }
+
+        return  responseEntity;
+    }
+*/
+
+    @PostMapping("/login")
+    ResponseEntity<TokenResponseDto> userLogin(@RequestBody UserLoginRequestDto requestDto)
+    {
+        ResponseEntity<TokenResponseDto> responseEntity;
+        UserResponseDto response = new UserResponseDto();
+
+        TokenResponseDto tokenResponseDto = new TokenResponseDto();
+        try {
+            Token token;
+            token = userService.loginUser(requestDto.getEmail(), requestDto.getPassword());
+            User savedUser = token.getUser();
+            response.setEmail(savedUser.getEmail());
+            response.setName(savedUser.getName());
+            response.setPhonenumber(savedUser.getPhonenumber());
+            response.setMessage("Logged In Succesfully");
+            response.setResponseStatus(ResponseStatus.SUCCESS);
+            response.setAddress(savedUser.getAddress());
+            tokenResponseDto.setUserResponseDto(response);
+            tokenResponseDto.setMessage("Token generated succesfully");
+            tokenResponseDto.setValue(token.getValue());
+            tokenResponseDto.setExpirydate(token.getExpirydate());
+            tokenResponseDto.setResponseStatus(ResponseStatus.SUCCESS);
+            responseEntity = new ResponseEntity<>(tokenResponseDto, HttpStatus.OK);
+        }
+        catch(UserNotFoundException e)
+        {
+            tokenResponseDto.setResponseStatus(ResponseStatus.FAILURE);
+            tokenResponseDto.setMessage("Token not generated");
+            tokenResponseDto.setUserResponseDto(response);
+            response.setMessage(e.getMessage());
+            response.setResponseStatus(ResponseStatus.FAILURE);
+            responseEntity = new ResponseEntity<>(tokenResponseDto,HttpStatus.NOT_FOUND);
+        }
+        catch (PasswordNotMatchingException e)
+        {
+            tokenResponseDto.setResponseStatus(ResponseStatus.FAILURE);
+            tokenResponseDto.setMessage("Token not generated");
+            tokenResponseDto.setUserResponseDto(response);
+            response.setMessage(e.getMessage());
+            response.setResponseStatus(ResponseStatus.FAILURE);
+            responseEntity = new ResponseEntity<>(tokenResponseDto,HttpStatus.NOT_ACCEPTABLE);
         }
 
         return  responseEntity;
