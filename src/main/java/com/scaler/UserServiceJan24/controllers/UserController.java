@@ -1,6 +1,5 @@
 package com.scaler.UserServiceJan24.controllers;
 
-import com.scaler.UserServiceJan24.dtos.UserDto;
 import com.scaler.UserServiceJan24.dtos.UserLoginRequestDto;
 import com.scaler.UserServiceJan24.dtos.UserRequestDto;
 import com.scaler.UserServiceJan24.dtos.UserResponseDto;
@@ -10,9 +9,7 @@ import com.scaler.UserServiceJan24.exceptions.UserFoundException;
 import com.scaler.UserServiceJan24.exceptions.UserNotFoundException;
 import com.scaler.UserServiceJan24.models.User;
 import com.scaler.UserServiceJan24.services.IUserServices;
-import com.scaler.UserServiceJan24.services.UserServices;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -42,7 +39,7 @@ public class UserController {
 
         User userRequest = new User();
         userRequest.setName(userRequestDto.getName());
-        userRequest.setPassword(userRequestDto.getPassword());
+        userRequest.setHashedPassword(userRequestDto.getPassword());
         userRequest.setPhonenumber(userRequestDto.getPhonenumber());
         userRequest.setAddress(userRequestDto.getAddress());
         User createdUser = userService.createUser(userRequest);
@@ -69,7 +66,7 @@ public class UserController {
         User userRequest = new User();
         userRequest.setName(userRequestDto.getName());
         userRequest.setEmail(userRequestDto.getEmail());
-        userRequest.setPassword(userRequestDto.getPassword());
+        userRequest.setHashedPassword(userRequestDto.getPassword());
         userRequest.setPhonenumber(userRequestDto.getPhonenumber());
         userRequest.setAddress(userRequestDto.getAddress());
 
@@ -284,7 +281,7 @@ public class UserController {
             user.setName(request.getName());
 
         if(request.getPassword()!= null)
-            user.setPassword(request.getPassword());
+            user.setHashedPassword(request.getPassword());
 
         if (request.getAddress()!= null)
             user.setAddress(request.getAddress());
