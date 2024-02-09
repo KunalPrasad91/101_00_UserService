@@ -1,11 +1,9 @@
 package com.scaler.UserServiceJan24.controllers;
 
-import com.scaler.UserServiceJan24.dtos.TokenResponseDto;
-import com.scaler.UserServiceJan24.dtos.UserLoginRequestDto;
-import com.scaler.UserServiceJan24.dtos.UserRequestDto;
-import com.scaler.UserServiceJan24.dtos.UserResponseDto;
+import com.scaler.UserServiceJan24.dtos.*;
 import com.scaler.UserServiceJan24.enums.ResponseStatus;
 import com.scaler.UserServiceJan24.exceptions.PasswordNotMatchingException;
+import com.scaler.UserServiceJan24.exceptions.TokenNotExistOrExpiredException;
 import com.scaler.UserServiceJan24.exceptions.UserFoundException;
 import com.scaler.UserServiceJan24.exceptions.UserNotFoundException;
 import com.scaler.UserServiceJan24.models.Token;
@@ -177,6 +175,27 @@ public class UserController {
         return  responseEntity;
     }
 
+    @PostMapping("/logout")
+    public ResponseEntity<LogoutResponseDto> UserLogout(@RequestBody UserLogoutRequestDto request)
+    {
+        ResponseEntity<LogoutResponseDto> responseEntity;
+        LogoutResponseDto response = new LogoutResponseDto();
+
+        try {
+            userService.logoutUser(request.getToken());
+            response.setMessage("Logged out Succesfully");
+            response.setResponseStatus(ResponseStatus.SUCCESS);
+            responseEntity = new ResponseEntity<>(response,HttpStatus.OK);
+        }
+        catch(TokenNotExistOrExpiredException e)
+        {
+            response.setMessage(e.getMessage());
+            response.setResponseStatus(ResponseStatus.FAILURE);
+            responseEntity = new ResponseEntity<>(response,HttpStatus.NOT_FOUND);
+        }
+
+        return responseEntity;
+    }
 
  /*
     // Step 1 getUserById without ResponseEntity

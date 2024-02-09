@@ -1,10 +1,12 @@
 package com.scaler.UserServiceJan24.services;
 
 import com.scaler.UserServiceJan24.exceptions.PasswordNotMatchingException;
+import com.scaler.UserServiceJan24.exceptions.TokenNotExistOrExpiredException;
 import com.scaler.UserServiceJan24.exceptions.UserFoundException;
 import com.scaler.UserServiceJan24.exceptions.UserNotFoundException;
 import com.scaler.UserServiceJan24.models.Token;
 import com.scaler.UserServiceJan24.models.User;
+import com.scaler.UserServiceJan24.repositories.ITokenRepository;
 import com.scaler.UserServiceJan24.repositories.IUserRepository;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,12 +25,16 @@ import java.util.Optional;
 public class UserServices implements  IUserServices{
 
     private IUserRepository userRepository;
+    private ITokenRepository tokenRepository;
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Autowired
-    UserServices(IUserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder)
+    UserServices(IUserRepository userRepository,
+                 ITokenRepository tokenRepository,
+                 BCryptPasswordEncoder bCryptPasswordEncoder)
     {
         this.userRepository = userRepository;
+        this.tokenRepository = tokenRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
     public User createUser(User userRequest)
@@ -88,8 +94,25 @@ public class UserServices implements  IUserServices{
         token.setExpirydate(expiryDate);
         token.setUser(savedUser);
         token.setValue(RandomStringUtils.randomAlphanumeric(128));
+        token.setDeleted(false);
+        token = tokenRepository.save(token);
 
         return token;
+    }
+
+    public Void logoutUser(String token) throws TokenNotExistOrExpiredException {
+        Optional<Token> tokenOptional = tokenRepository.findByValueAndDeletedEquals(token,false);
+
+        if(tokenOptional.isEmpty())
+        {
+            throw new TokenNotExistOrExpiredException("Token Not Exist Or Expired Exception");
+        }
+
+        Token tkn = tokenOptional.get();
+        tkn.setDeleted(true);
+        tokenRepository.save(tkn);
+
+        return null;
     }
 
     public User getUserById(Long id) throws UserNotFoundException {
