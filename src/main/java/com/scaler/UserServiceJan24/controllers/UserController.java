@@ -9,6 +9,7 @@ import com.scaler.UserServiceJan24.exceptions.UserNotFoundException;
 import com.scaler.UserServiceJan24.models.Token;
 import com.scaler.UserServiceJan24.models.User;
 import com.scaler.UserServiceJan24.services.IUserServices;
+import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -378,5 +379,12 @@ public class UserController {
 
         return responseEntity;
     }
+
+    @PostMapping("/validate/{token}")
+    public UserDto validateToken(@PathVariable("token") @NonNull String token)
+    {
+        return  UserDto.fromUser(userService.validateToken(token));
+    }
+
 
 }

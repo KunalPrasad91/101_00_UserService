@@ -181,4 +181,17 @@ public class UserServices implements  IUserServices{
 
         return  savedUser;
     }
+
+    @Override
+    public User validateToken(String token) {
+
+        Optional<Token> tokenOptional = tokenRepository.findByValueAndDeletedEqualsAndExpirydateGreaterThan(token, false, new Date());
+
+        if(tokenOptional.isEmpty())
+            return null;
+
+        Token tkn = tokenOptional.get();
+
+        return tkn.getUser();
+    }
 }
