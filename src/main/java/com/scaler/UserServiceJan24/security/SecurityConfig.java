@@ -15,6 +15,14 @@ Implement below Schema and Entity
 https://docs.spring.io/spring-authorization-server/reference/guides/how-to-jpa.html
  */
 
+/*
+Implement below 2 steps for Spring Authorization Server
+Step 1
+https://docs.spring.io/spring-authorization-server/reference/getting-started.html
+Step 2
+https://docs.spring.io/spring-authorization-server/reference/guides/how-to-jpa.html
+ */
+
 package com.scaler.UserServiceJan24.security;
 
 import java.security.KeyPair;
