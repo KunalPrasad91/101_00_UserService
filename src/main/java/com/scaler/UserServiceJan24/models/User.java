@@ -1,6 +1,7 @@
 package com.scaler.UserServiceJan24.models;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToMany;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,6 +18,6 @@ public class User extends BaseModel{
     private String phonenumber;
     private String address;
     private Boolean isEmailVerified;
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     List<Role> roles;
 }
