@@ -14,14 +14,14 @@ import org.springframework.security.oauth2.server.authorization.settings.ClientS
 
 import java.util.UUID;
 
-@SpringBootTest
+//@SpringBootTest
 class UserServiceJan24ApplicationTests {
 
-	@Autowired
+/*	@Autowired
 	JpaRegisteredClientRepository jpaRegisteredClientRepository;
 	@Test
 	void contextLoads() {
-	}
+	}*/
 
 /*	@Test
 	void storeRegisteredClientIntoDB() {

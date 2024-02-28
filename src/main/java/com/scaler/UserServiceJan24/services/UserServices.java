@@ -1,5 +1,8 @@
 package com.scaler.UserServiceJan24.services;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.scaler.UserServiceJan24.dtos.SendEmailEventDto;
 import com.scaler.UserServiceJan24.exceptions.PasswordNotMatchingException;
 import com.scaler.UserServiceJan24.exceptions.TokenNotExistOrExpiredException;
 import com.scaler.UserServiceJan24.exceptions.UserFoundException;
@@ -11,6 +14,7 @@ import com.scaler.UserServiceJan24.repositories.IUserRepository;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -28,14 +32,21 @@ public class UserServices implements  IUserServices{
     private ITokenRepository tokenRepository;
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
+    private KafkaTemplate<String,String> kafkaTemplate;
+    private ObjectMapper objectMapper;
+
     @Autowired
     UserServices(IUserRepository userRepository,
                  ITokenRepository tokenRepository,
-                 BCryptPasswordEncoder bCryptPasswordEncoder)
+                 BCryptPasswordEncoder bCryptPasswordEncoder,
+                 KafkaTemplate kafkaTemplate,
+                 ObjectMapper objectMapper)
     {
         this.userRepository = userRepository;
         this.tokenRepository = tokenRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+        this.kafkaTemplate = kafkaTemplate;
+        this.objectMapper = objectMapper;
     }
     public User createUser(User userRequest)
     {
@@ -58,6 +69,23 @@ public class UserServices implements  IUserServices{
 
         userRequest.setHashedPassword(bCryptPasswordEncoder.encode(userRequest.getHashedPassword()));
         User savedUser = userRepository.save(userRequest);
+
+        SendEmailEventDto sendEmailEvent = new SendEmailEventDto();
+        sendEmailEvent.setFrom("mems.tech09@gmail.com");
+        sendEmailEvent.setFromPassword("fqigobsaqgwjocuc");
+        sendEmailEvent.setTo(email);
+        sendEmailEvent.setSubject("Signup Successful");
+        sendEmailEvent.setBody("Welcome to Course. Miles to achieve. Greeting course");
+
+        try {
+            kafkaTemplate.send(
+                    "sendEmail",
+                    objectMapper.writeValueAsString(sendEmailEvent)
+            );
+        }
+        catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
 
         return savedUser;
     }
